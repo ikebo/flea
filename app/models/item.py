@@ -2,8 +2,8 @@
   Created by kebo on 2018/10/15
 """
 import datetime
-
 from . import db
+
 
 class Item(db.Model):
     __tablename__ = 'item'
@@ -31,3 +31,7 @@ class Item(db.Model):
 
     def __repr__(self):
         return '<Item %s>' % self.itemName
+
+    def raw(self):
+        return dict(type=self.type, itemName=self.itemName,
+                    des=self.des, price=self.price)

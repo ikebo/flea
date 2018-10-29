@@ -10,6 +10,7 @@ from .item import item
 from .comment import comment
 from .reply import reply
 
+
 def create_blueprint_api_v1():
     api = Blueprint("api", __name__)
     user.register(api)

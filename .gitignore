@@ -2,4 +2,5 @@
 /venv/
 /.idea/
 /app/settings.py
+/test/
 */__pycache__/
