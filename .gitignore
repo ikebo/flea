@@ -2,7 +2,7 @@
 /venv/
 /.idea/
 /app/settings.py
-/test/
 /docs/
-api.md
+/static/advice/
+/static/upload/
 */__pycache__/
