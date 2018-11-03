@@ -3,4 +3,6 @@
 /.idea/
 /app/settings.py
 /test/
+/docs/
+api.md
 */__pycache__/

@@ -3,12 +3,14 @@
 """
 
 from flask import Blueprint
-from app.utils.redprint import Redprint   # 导入供其他红图模块使用
+from app.utils.redprint import Redprint   # 导入供其他红图模块使用(不要删除)
 
 from .user import user
 from .item import item
 from .comment import comment
 from .reply import reply
+from .advice import api as advice
+from .test import test
 
 
 def create_blueprint_api_v1():
@@ -17,4 +19,6 @@ def create_blueprint_api_v1():
     item.register(api)
     comment.register(api)
     reply.register(api)
+    advice.register(api)
+    test.register(api)
     return api

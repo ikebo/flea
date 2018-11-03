@@ -4,7 +4,9 @@
 """
 app/utils/enums.py
 ======================
-枚举
+枚举:
+    登陆类型的枚举 -> ClientTypeEnum
+    物品类型的枚举 -> ItemTypeEnum
 
 """
 from enum import Enum

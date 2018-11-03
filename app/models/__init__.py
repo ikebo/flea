@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy, BaseQuery
-from app.utils.error import NotFound
+from app.req_res import *
 
 
 class Query(BaseQuery):
