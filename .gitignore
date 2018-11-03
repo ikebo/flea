@@ -5,4 +5,4 @@
 /docs/
 /static/advice/
 /static/upload/
-*/__pycache__/
+**/__pycache__/
