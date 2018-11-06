@@ -127,6 +127,8 @@ def delete_item(item_id):
         return ItemNotFound()
     if i.delete():
         return DeleteSuccess()
+    else:
+        return SomethingError()
     # return '删除物品信息'
 
 

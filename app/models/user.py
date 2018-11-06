@@ -1,4 +1,6 @@
 from . import db
+from app.utils import dict_get
+from werkzeug.security import generate_password_hash, check_password_hash                # 加密密码以及检测hash过的密码
 import json
 
 
@@ -6,22 +8,28 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 
+    # 相关状态
+    status = db.Column(db.SmallInteger, default=1)              # 数据状态(日后实现假删除) 1表示存在 0表示删除
+    authentication = db.Column(db.SmallInteger, default=0)      # 学生是否认证 0表示未认证 1表示已认证
+
     # 微信信息
-    openId = db.Column(db.String(100))                  # 微信openid
-    nickName = db.Column(db.String(30))                 # 微信用户名
-    avatarUrl = db.Column(db.String(100))               # 微信头像地址
+    openId = db.Column(db.String(100))                          # 微信openid
+    nickName = db.Column(db.String(30))                         # 微信用户名
+    avatarUrl = db.Column(db.String(100))                       # 微信头像地址
 
     # 联系方式
-    phoneNumber = db.Column(db.String(11))              # 手机号
-    qqNumber = db.Column(db.String(11))                 # qq 号
-    weixinNumber = db.Column(db.String(20))             # 微信号
+    phoneNumber = db.Column(db.String(11))                      # 手机号
+    qqNumber = db.Column(db.String(11))                         # qq 号
+    weixinNumber = db.Column(db.String(20))                     # 微信号
 
     # 个人真实信息
-    realName = db.Column(db.String(20))                 # 姓名
-    sex = db.Column(db.SmallInteger)                    # 性别
-    stuId = db.Column(db.String(20))                    # 学号
-    clsName = db.Column(db.String(20))                  # 班级
-    department = db.Column(db.String(20))               # 院系
+    realName = db.Column(db.String(20))                         # 姓名
+    sex = db.Column(db.SmallInteger)                            # 性别
+    stuId = db.Column(db.String(20))                            # 学号
+    _password = db.Column(db.String(60))                        # 密码
+
+    clsName = db.Column(db.String(20))                          # 班级
+    department = db.Column(db.String(20))                       # 院系
 
     # 所有物品，评论，回复
     items = db.relationship('Item', backref='user', lazy='dynamic')
@@ -30,6 +38,19 @@ class User(db.Model):
 
     def __init__(self, openId):
         self.openId = openId
+
+    @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, raw):
+        self._password = generate_password_hash(raw)
+
+    def check_password(self, raw):
+        if not self._password:
+            return False
+        return check_password_hash(self._password, raw)
 
     @staticmethod
     def query_user_by_openId(openId):
@@ -52,8 +73,12 @@ class User(db.Model):
         return user
 
     def set_auth(self):
+        """
+        设置authentication
+        :return:
+        """
         try:
-            self.qqNumber = '1'
+            self.authentication = '1'
             db.session.add(self)
             db.session.commit()
             return True
@@ -68,8 +93,12 @@ class User(db.Model):
         :return:
         """
         try:
-            self.avatarUrl = kwargs['avatarUrl']
-            self.nickName = kwargs['nickName']
+            avatarUrl = dict_get(kwargs, 'avatarUrl')
+            nickName = dict_get(kwargs, 'nickName')
+            if avatarUrl is not None:
+                self.avatarUrl = avatarUrl
+            if nickName is not None:
+                self.nickName = nickName
             db.session.add(self)
             db.session.commit()
             return True
@@ -84,9 +113,15 @@ class User(db.Model):
         :return:
         """
         try:
-            self.phoneNumber = kwargs.get('phoneNumber', None)
-            self.qqNumber = kwargs.get('qqNumber', None)
-            self.weixinNumber = kwargs('weixinNumber', None)
+            phoneNumber = dict_get(kwargs, 'phoneNumber')
+            qqNumber = dict_get(kwargs, 'qqNumber')
+            weixinNumber = dict_get(kwargs, 'weixinNumber')
+            if phoneNumber is not None:
+                self.phoneNumber = phoneNumber
+            if qqNumber is not None:
+                self.qqNumber = qqNumber
+            if weixinNumber is not None:
+                self.weixinNumber = weixinNumber
             db.session.add(self)
             db.session.commit()
             return True

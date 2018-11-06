@@ -6,6 +6,7 @@ from flask import request, json
 from werkzeug.exceptions import HTTPException
 
 
+# APIException -》 自定义异常基类
 class APIException(HTTPException):
     # 默认错误:
     code = 500

@@ -35,7 +35,7 @@ def get_users():
         users = User.query.all()
         users = [u.raw() for u in users]
         if users is None:
-            return NotFound()
+            return UserNotFound()
         return Res(1, 'get users successfully', users).jsonify()
     except Exception as e:
         print(e)
@@ -51,7 +51,7 @@ def get_user(user_id):
     """
     u = User.query.get(user_id)
     if u is None:
-        return NotFound()
+        return UserNotFound()
     else:
         return Res(1, 'get user successfully', u.raw()).jsonify()
 
@@ -102,7 +102,7 @@ def update_avatar(user_id):
     transfer = Transfer()
     u = User.query_user_by_id(user_id)
     if u is None:
-        return NotFound()
+        return UserNotFound()
 
     data = transfer.handle_post()
     print(data)
@@ -122,7 +122,7 @@ def update_contact(user_id):
     transfer = Transfer()
     u = User.query_user_by_id(user_id)
     if u is None:
-        return NotFound()
+        return UserNotFound()
 
     data = transfer.handle_post()
     print(data)
@@ -145,6 +145,8 @@ def auth():
         user_id, stu_id, stu_pwd = data['user_id'], data['stu_id'], data['stu_pwd']
         if request_auth(stu_id, stu_pwd):
             u = User.query.get(user_id)
+            if u is None:
+                return UserNotFound()
             if u.set_auth():
                 return Res(1, 'success').jsonify()
         else:
@@ -163,7 +165,7 @@ def delete_user(user_id):
     """
     u = User.query.get(user_id)
     if u is None:
-        return NotFound()
+        return UserNotFound()
     if u.delete():
         return DeleteSuccess()
     else:

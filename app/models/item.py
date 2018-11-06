@@ -9,6 +9,10 @@ from . import db
 class Item(db.Model):
     __tablename__ = 'item'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+
+    # 相关状态
+    status = db.Column(db.SmallInteger, default=1)                              # 数据状态(日后实现假删除) 1表示存在 0表示删除
+
     type = db.Column(db.SmallInteger)                                           # 物品分类
     itemName = db.Column(db.String(30))                                         # 物品标题/名称
     time = db.Column(db.DateTime)                                               # 发布时间
