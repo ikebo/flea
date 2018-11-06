@@ -4,4 +4,6 @@
 /app/settings.py
 /test/
 /docs/
+/static/advice/
+/static/upload/
 */__pycache__/
