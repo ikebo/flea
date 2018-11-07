@@ -17,6 +17,7 @@ class HTTP:
 
 # 模拟登录
 def request_auth(username, password):
+    # username 和 password是 登陆 http://uia.whxy.edu.cn/cas/login 的账号和密码
     url = 'http://uia.whxy.edu.cn/cas/login'
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,3 +35,7 @@ def request_auth(username, password):
     return '用户登录' not in pq(pr.text)('title').text()
 
 
+if __name__ == '__main__':
+    # test request_auth
+    print(request_auth("这里填学号", "这里填密码"))
+    # 如果学号和密码输入无误并输出True就说明验证成功

@@ -78,7 +78,7 @@ class User(db.Model):
         :return:
         """
         try:
-            self.authentication = '1'
+            self.authentication = 1
             db.session.add(self)
             db.session.commit()
             return True
@@ -131,6 +131,10 @@ class User(db.Model):
         return False
 
     def delete(self):
+        """
+        删除对象 - 直接删除
+        :return:
+        """
         try:
             db.session.delete(self)
             db.session.commit()

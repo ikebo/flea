@@ -11,6 +11,10 @@ class Success(APIException):
     error_code = 0
 
 
+class AuthSuccess(Success):
+    msg = 'auth success'
+
+
 class EditSuccess(Success):
     msg = 'edit success'
 

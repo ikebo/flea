@@ -148,7 +148,7 @@ def auth():
             if u is None:
                 return UserNotFound()
             if u.set_auth():
-                return Res(1, 'success').jsonify()
+                return AuthSuccess()
         else:
             return PasswordError()
     except Exception as e:
