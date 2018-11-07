@@ -8,4 +8,4 @@ item = Redprint("item")
 
 @item.route('')
 def get_item():
-    return 'item'
+    return {'msg': 'item'}

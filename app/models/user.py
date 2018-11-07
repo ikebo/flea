@@ -18,6 +18,8 @@ class User(db.Model):
     realName = db.Column(db.String(20))  # 姓名
     sex = db.Column(db.SmallInteger)     # 性别
     stuId = db.Column(db.String(20))     # 学号
+    stuPwd = db.Column(db.String(100))   # 教务系统密码(加密)
+    isAuth = db.Column(db.SmallInteger)  # 是否完成认证
     clsName = db.Column(db.String(20))   # 班级
     department = db.Column(db.String(20)) # 院系
 
@@ -30,6 +32,26 @@ class User(db.Model):
     def __init__(self, openId):
         self.openId = openId
 
+    def json(self):
+        return dict(id=self.id, nickName=self.nickName, avatarUrl=self.avatarUrl)
+
+    @staticmethod
+    def register_by_openid(openid):
+        try:
+            user = User(openid)
+            db.session.add(user)
+            db.session.commit()
+            return user, None
+        except Exception as e:
+            return None, e
+
+    @staticmethod
+    def is_exists_by_openid(openid):
+        user = User.query.filter_by(openId=openid).first()
+        if user is not None:
+            return user, None
+        else:
+            return None, 'no this user'
 
     def __repr__(self):
         return "<User %r>" % self.nickName
