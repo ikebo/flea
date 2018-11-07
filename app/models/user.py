@@ -10,7 +10,7 @@ class User(db.Model):
 
     # 相关状态
     status = db.Column(db.SmallInteger, default=1)              # 数据状态(日后实现假删除) 1表示存在 0表示删除
-    authentication = db.Column(db.SmallInteger, default=0)      # 学生是否认证 0表示未认证 1表示已认证
+    isAuth = db.Column(db.SmallInteger, default=0)              # 是否完成认证 0表示未认证 1表示已认证
 
     # 微信信息
     openId = db.Column(db.String(100))                          # 微信openid
@@ -26,7 +26,7 @@ class User(db.Model):
     realName = db.Column(db.String(20))                         # 姓名
     sex = db.Column(db.SmallInteger)                            # 性别
     stuId = db.Column(db.String(20))                            # 学号
-    _password = db.Column(db.String(60))                        # 密码
+    stuPwd = db.Column(db.String(100))                          # 教务系统密码
 
     clsName = db.Column(db.String(20))                          # 班级
     department = db.Column(db.String(20))                       # 院系
@@ -41,16 +41,16 @@ class User(db.Model):
 
     @property
     def password(self):
-        return self._password
+        return self.stuPwd
 
     @password.setter
     def password(self, raw):
-        self._password = generate_password_hash(raw)
+        self.stuPwd = generate_password_hash(raw)
 
     def check_password(self, raw):
-        if not self._password:
+        if not self.stuPwd:
             return False
-        return check_password_hash(self._password, raw)
+        return check_password_hash(self.stuPwd, raw)
 
     @staticmethod
     def query_user_by_openId(openId):
@@ -78,7 +78,7 @@ class User(db.Model):
         :return:
         """
         try:
-            self.authentication = 1
+            self.isAuth = 1
             db.session.add(self)
             db.session.commit()
             return True
@@ -164,6 +164,24 @@ class User(db.Model):
         weixinNumber = self.weixinNumber
 
         return json.dumps(dict(phoneNumber=phoneNumber, qqNumber=qqNumber, weixinNumber=weixinNumber))
+
+    @staticmethod
+    def register_by_openid(openid):
+        try:
+            user = User(openid)
+            db.session.add(user)
+            db.session.commit()
+            return user, None
+        except Exception as e:
+            return None, e
+
+    @staticmethod
+    def is_exists_by_openid(openid):
+        user = User.query.filter_by(openId=openid).first()
+        if user is not None:
+            return user, None
+        else:
+            return None, 'no this user'
 
     def __repr__(self):
         return "<User %r>" % self.nickName
