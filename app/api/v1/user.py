@@ -22,18 +22,6 @@ from app.utils.util import is_code_valid
 
 user = Redprint("user")
 
-# 所有返回值最终为以下格式
-# {
-#    code: (0 or 1 or 2) <1表示成功， 0表示正常失败，2表示有异常>
-#    msg: <提示信息>
-#    data: <需要返回的数据，格式为dict, 没有可不填>
-# }
-# 但是每次这样返回很繁琐，所在在app.__init__.py 中重写了app.response_class
-# 可直接返回dict, tuple or list, 若为dict, 则格式为 dict(code=.., msg=.., data)
-# 若为tuple, 因为flask中直接返回 a, b, c格式的话会自动调用make_response， 所以格式为
-# (code, msg, data<没有可不填，默认为None>), status_code, headers
-# 若为list, 格式为 [code, msg, data<没有可不填，默认为None>]
-
 
 @user.route('/', methods=['GET'])
 def get_users():
@@ -144,12 +132,6 @@ def delete_user(user_id):
         return DeleteSuccess()
     else:
         return SomethingError()
-
-
-# 测试用
-@user.route('')
-def get_user():
-    return (1, 'success', dict(a='code')), 203
 
 
 # 用户登录, 前端根据获取的code调用此接口

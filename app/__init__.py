@@ -9,7 +9,22 @@ from app.api.v1 import create_blueprint_api_v1
 
 
 class JSONResponse(Response):
-    """可直接返回dict,tuple or list 自动转成json"""
+    """
+        可直接返回dict,tuple or list 自动转成json
+        所有返回值最终为以下格式:
+        {
+           code: (0 or 1 or 2) <1表示成功， 0表示正常失败，2表示有异常>
+           msg: <提示信息>
+           data: <需要返回的数据，格式为dict, 没有可不填>
+        }
+        但是每次这样返回很繁琐，所在重写了app.response_class 可直接返回dict, tuple or list,
+        若为dict, 则格式为:
+            return dict(code=.., msg=.., data)
+        若为tuple, 因flask中直接返回 a, b, c格式的话会自动调用make_response， 故格式为:
+            return (code, msg, data<没有可不填，默认为None>), status_code, headers
+        若为list, 格式为:
+            return [code, msg, data<没有可不填，默认为None>]
+    """
 
     @classmethod
     def force_type(cls, rv, environ=None):

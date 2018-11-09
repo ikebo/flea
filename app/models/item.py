@@ -75,8 +75,8 @@ class Item(db.Model):
     def raw(self):
         if not self.time:
             self.time = datetime.datetime.now()
-        return dict(id=self.id, type=self.type, des=self.des, srcs=self.srcs, place=self.place, user_id=self.user_id,
-                time=self.time.strftime('%m-%d-%H-%M-%S'), user=self.user.seri())
+        return dict(id=self.id, type=self.type, des=self.des, srcs=self.srcs, user_id=self.user_id,
+                time=self.time.strftime('%Y-%m-%d-%H-%M-%S'), user=self.user.seri())
 
     def __repr__(self):
         return '<Item %s>' % self.itemName

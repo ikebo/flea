@@ -6,9 +6,8 @@ from app.req_res.base import APIException
 
 
 class NotFound(APIException):
-    code = 404
+    code = 0
     msg = 'the resource are not found O__O...'
-    error_code = 1001
 
 
 class UserNotFound(NotFound):

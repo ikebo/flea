@@ -25,20 +25,18 @@ item = Redprint("item")
 @item.route('/', methods=['GET'])
 def get_item():
     """
-    返回所有物品信息
+    返回所有物品基本信息及物品对应的发布者id
     :return:
     """
     try:
-        items = Item.query.join(User).all()
-        if items is None:
-            return ItemNotFound()
+        items = Item.query.all()
         data = [i.raw() for i in items]
         print(data)
-        return Res(msg='get all item data successfully', data=data).jsonify()
+        return dict(code=1, msg='get all item data successfully', data=data)
     except Exception as e:
         print(e)
-    return SomethingError()
-    # return '返回物品信息'
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
+    # return '返回所有物品信息'
 
 
 @item.route('/page/<int:page_num>', methods=['GET'])
@@ -48,18 +46,13 @@ def get_item2(page_num):
     :return:
     """
     try:
-        query = Item.query.join(User)
-        items = query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
-        if items is None:
-            return ItemNotFound()
+        items = Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
         data = [i.raw() for i in items]
         print(data)
-        return Res(msg='get a part of item data successfully', data=data).jsonify()
+        return dict(code=1, msg='get a part of item data successfully', data=data)
     except Exception as e:
         print(e)
-        if isinstance(e, NotFound):
-            return NotFound()
-    return SomethingError()
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '返回部分物品信息'
 
 
@@ -73,12 +66,11 @@ def return_item(item_id):
     try:
         i = Item.query.filter_by(id=item_id).first_or_404()
         data = i.raw()
-        return Res(code=1, msg='get item successfully', data=data).jsonify()
+        print(data)
+        return dict(code=1, msg='get a item data successfully', data=data)
     except Exception as e:
         print(e)
-        if isinstance(e, NotFound):
-            return ItemNotFound()
-    return SomethingError()
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '返回某个物品信息'
 
 

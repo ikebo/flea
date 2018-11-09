@@ -8,16 +8,13 @@ from werkzeug.exceptions import HTTPException
 
 # APIException -》 自定义异常基类
 class APIException(HTTPException):
-    # 默认错误:
-    code = 500
+    # code: (0 or 1 or 2) <1表示成功， 0表示正常失败，2表示有异常>  msg: <提示信息>
+    code = 2
     msg = 'sorry, something error (*￣︶￣)!'
-    error_code = 999            # 未知错误
 
-    def __init__(self, msg=None, code=None, error_code=None, headers=None):
+    def __init__(self, msg=None, code=None, headers=None):
         if code:
             self.code = code
-        if error_code:
-            self.error_code = error_code
         if msg:
             self.msg = msg
         super(APIException, self).__init__(msg, None)           # msg表示description None赋给response
@@ -25,7 +22,6 @@ class APIException(HTTPException):
     def get_body(self, environ=None):
         body = dict(
             msg=self.msg,
-            error_code=self.error_code,
             request=request.method + ' ' + self.get_url_no_param()
         )
         text = json.dumps(body)
