@@ -1,15 +1,13 @@
 from . import db
+from app.models.base import Base
 from app.utils import dict_get
 from werkzeug.security import generate_password_hash, check_password_hash                # 加密密码以及检测hash过的密码
 import json
 
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-
-    # 相关状态
-    status = db.Column(db.SmallInteger, default=1)              # 数据状态(日后实现假删除) 1表示存在 0表示删除
     isAuth = db.Column(db.SmallInteger, default=0)              # 是否完成认证 0表示未认证 1表示已认证
 
     # 微信信息
@@ -37,6 +35,7 @@ class User(db.Model):
     replies = db.relationship('Reply', backref='user', lazy='dynamic')
 
     def __init__(self, openId):
+        super(User, self).__init__()
         self.openId = openId
 
     @property
@@ -132,19 +131,6 @@ class User(db.Model):
         except Exception as e:
             print('Exception ', e)
 
-        return False
-
-    def delete(self):
-        """
-        删除对象 - 直接删除
-        :return:
-        """
-        try:
-            db.session.delete(self)
-            db.session.commit()
-            return True
-        except Exception as e:
-            print(e)
         return False
 
     def json(self):

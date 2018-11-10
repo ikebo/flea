@@ -2,16 +2,13 @@
   Created by kebo on 2018/10/15
 """
 import datetime
-
 from . import db
+from app.models.base import Base
 
 
-class Reply(db.Model):
+class Reply(Base):
     __tablename__ = 'reply'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-
-    # 相关状态
-    status = db.Column(db.SmallInteger, default=1)                                  # 数据状态(日后实现假删除) 1表示存在 0表示删除
 
     content = db.Column(db.String(100))                                             # 回复内容
     time = db.Column(db.DateTime)                                                   # 回复时间
@@ -19,6 +16,7 @@ class Reply(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))                       # 回复所属用户id
 
     def __init__(self, content, comment_id, user_id):
+        super(Reply, self).__init__()
         self.content = content
         self.time = datetime.datetime.now()
         self.comment_id = comment_id
@@ -26,3 +24,5 @@ class Reply(db.Model):
 
     def __repr__(self):
         return '<Reply %s>' % self.content
+
+

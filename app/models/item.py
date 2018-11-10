@@ -4,15 +4,13 @@
 """
 import datetime
 from . import db
+from app.models.base import Base
 from app.utils import dict_get
 
 
-class Item(db.Model):
+class Item(Base):
     __tablename__ = 'item'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-
-    # 相关状态
-    status = db.Column(db.SmallInteger, default=1)                              # 数据状态(日后实现假删除) 1表示存在 0表示删除
 
     type = db.Column(db.SmallInteger, default=8)                                # 物品分类(默认为其他)
     itemName = db.Column(db.String(30))                                         # 物品标题/名称
@@ -27,6 +25,7 @@ class Item(db.Model):
     comments = db.relationship('Comment', backref='item', lazy='dynamic')       # 物品的所有评论
 
     def __init__(self, type, itemName, srcs, des, price, user_id):
+        super(Item, self).__init__()
         self.type = type
         self.itemName = itemName
         self.time = datetime.datetime.now()
@@ -58,15 +57,6 @@ class Item(db.Model):
             if price is not None:
                 self.price = price
             db.session.add(self)
-            db.session.commit()
-            return True
-        except Exception as e:
-            print(e)
-        return False
-
-    def delete(self):
-        try:
-            db.session.delete(self)
             db.session.commit()
             return True
         except Exception as e:

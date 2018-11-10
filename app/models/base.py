@@ -7,7 +7,7 @@ from app.models import db
 
 # 数据类基类
 class Base(db.Model):
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    __abstract__ = True
 
     # 相关状态
     status = db.Column(db.SmallInteger, default=1)  # 数据状态(日后实现假删除) 1表示存在 0表示删除
