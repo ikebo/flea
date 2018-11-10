@@ -99,6 +99,8 @@ class User(db.Model):
                 self.avatarUrl = avatarUrl
             if nickName is not None:
                 self.nickName = nickName
+            if not avatarUrl and not nickName:          # avatarUrl nickName 不能都为None
+                return False
             db.session.add(self)
             db.session.commit()
             return True
@@ -122,6 +124,8 @@ class User(db.Model):
                 self.qqNumber = qqNumber
             if weixinNumber is not None:
                 self.weixinNumber = weixinNumber
+            if not phoneNumber and not qqNumber and not weixinNumber:       # 三种联系方式不能都为None
+                return False
             db.session.add(self)
             db.session.commit()
             return True

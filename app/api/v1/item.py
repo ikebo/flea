@@ -23,7 +23,7 @@ item = Redprint("item")
 
 
 @item.route('/', methods=['GET'])
-def get_item():
+def get_items():
     """
     返回所有物品基本信息及物品对应的发布者id
     :return:
@@ -40,7 +40,7 @@ def get_item():
 
 
 @item.route('/page/<int:page_num>', methods=['GET'])
-def get_item2(page_num):
+def get_items2(page_num):
     """
     返回部分物品信息
     :return:
@@ -76,15 +76,16 @@ def return_item(item_id):
 
 @item.route('/<int:user_id>', methods=['POST'])
 def post_item(user_id):
-    transfer = Transfer()
-    data = transfer.handle_post()
-    print('data: ', data)
-    user = User.query.get(user_id)
-    if user is None:
-        return UserNotFound()
-    if Item.create_item(data, user_id) and user.update_contact(data):
-        return PostSuccess()
-    return SomethingError()
+    try:
+        transfer = Transfer()
+        data = transfer.handle_post()
+        print('data: ', data)
+        User.query.get(user_id)
+        if Item.create_item(data, user_id):
+            return PostSuccess()
+    except Exception as e:
+        print(e)
+        return UserNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '发布物品信息'
 
 
@@ -95,15 +96,16 @@ def edit_item(item_id):
     :param item_id:
     :return:
     """
-    i = Item.query.get(item_id)
-    if i is None:
-        return ItemNotFound()
-    transfer = Transfer()
-    data = transfer.handle_post()
-    print('edit_item', data)
-    if i.edit(data):
-        return EditSuccess()
-    return SomethingError()
+    try:
+        i = Item.query.get(item_id)
+        transfer = Transfer()
+        data = transfer.handle_post()
+        print('edit_item', data)
+        if i.edit(data):
+            return EditSuccess()
+    except Exception as e:
+        print(e)
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '修改物品信息'
 
 
@@ -114,13 +116,13 @@ def delete_item(item_id):
     :param item_id:
     :return:
     """
-    i = Item.query.get(item_id)
-    if i is None:
-        return ItemNotFound()
-    if i.delete():
-        return DeleteSuccess()
-    else:
-        return SomethingError()
+    try:
+        i = Item.query.get(item_id)
+        if i.delete():
+            return DeleteSuccess()
+    except Exception as e:
+        print(e)
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '删除物品信息'
 
 
@@ -131,8 +133,9 @@ def search_item():
     :return:
     """
     try:
-        page = int(request.args.get('page'))
-        search_key = request.args.get('key')
+        transfer = Transfer()
+        page = int(transfer.args_get('page'))
+        search_key = transfer.args_get('key')
         key = '%{}%'.format(search_key)
         print('key', key)
         query = Item.query.join(User)

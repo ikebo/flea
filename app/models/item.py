@@ -4,6 +4,7 @@
 """
 import datetime
 from . import db
+from app.utils import dict_get
 
 
 class Item(db.Model):
@@ -35,14 +36,27 @@ class Item(db.Model):
         self.user_id = user_id
 
     def edit(self, kwargs):
+        """
+        编辑物品信息
+        :param kwargs: 物品类别  物品姓名 物品描述 物品图片地址 物品价格
+        :return:
+        """
         try:
-            kwargs = kwargs['postData']
-            self.type = kwargs['itemType']
-            self.itemName = kwargs['itemName']
-            date_str = kwargs['time']
-            kwargs['time'] = datetime.date(*map(int, date_str.split('-')))
-            self.time = kwargs['time']
-            self.des = kwargs['des']
+            type = dict_get(kwargs, 'itemType')
+            itemName = dict_get(kwargs, 'itemName')
+            des = dict_get(kwargs, 'des')
+            srcs = dict_get(kwargs, 'srcs')
+            price = dict_get(kwargs, 'price')
+            if type is not None:
+                self.type = type
+            if itemName is not None:
+                self.itemName = itemName
+            if des is not None:
+                self.des = des
+            if srcs is not None:
+                self.srcs = srcs
+            if price is not None:
+                self.price = price
             db.session.add(self)
             db.session.commit()
             return True
@@ -61,6 +75,12 @@ class Item(db.Model):
 
     @staticmethod
     def create_item(kwargs, user_id):
+        """
+        创建物品
+        :param kwargs:   物品类别  物品姓名 物品描述 物品图片地址 物品价格
+        :param user_id:  用户id
+        :return:
+        """
         try:
             print(kwargs)
             item = Item(itemName=kwargs['itemName'], type=kwargs['type'], des=kwargs['des'],

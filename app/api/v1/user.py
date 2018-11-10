@@ -19,6 +19,7 @@ from app.req_res.res import Res
 from app.req_res.transfer import Transfer
 from app.utils.http import request_auth
 from app.utils.util import is_code_valid
+from flask import g
 
 user = Redprint("user")
 
@@ -146,13 +147,15 @@ def login(code):
     else:
         user, nil = User.is_exists_by_openid(openid)
         if nil is not None:
-            # 注册此用户
+            # 注册此用户 然后 并保存用户信息到g变量中
             user, nil = User.register_by_openid(openid)
+            g.user = user
             if nil is not None:
                 return (2, 'fail to register user'), 500
             else:
                 return (1, 'register user successfully', user.json()), 200
         else:
+            g.user = user           # 保存用户信息到g变量中
             return (1, 'old user', user.json()), 200
 
 
