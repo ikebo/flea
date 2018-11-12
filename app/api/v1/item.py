@@ -132,6 +132,7 @@ def search_item(search_key, page_num):
     搜索item get实现
     :return:
     """
+    # todo 待测试
     try:
         key = '%{}%'.format(search_key)
         print("key and page_num: ", key, page_num)
@@ -150,6 +151,7 @@ def search_item2():
     搜索item post实现
     :return:
     """
+    # todo 待测试
     try:
         req = Transfer()
         data = req.handle_post()
@@ -171,6 +173,7 @@ def upload_img():
     上传图片，返回图片地址
     :return: 图片地址
     """
+    # todo 待测试
     try:
         print(request.files)
         transfer = Transfer()

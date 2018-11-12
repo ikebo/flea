@@ -5,7 +5,6 @@
 import datetime
 from . import db
 from app.models.base import Base
-from app.models.user import User
 from app.utils import dict_get
 from sqlalchemy import orm
 
@@ -92,6 +91,8 @@ class Item(Base):
         :param page_num: 指定返回范围
         :return:
         """
+        # todo 目前是根据描述来查找  以后改成根据各种信息(itemName des type等等)来查找
+        from app.models.user import User            # 防止相互导入
         query = Item.query.join(User)
         items = query.filter(Item.des.like(search_key)).order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
         data = [dict(i) for i in items]

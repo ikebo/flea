@@ -1,6 +1,5 @@
 from . import db
 from app.models.base import Base
-from app.models.item import Item
 from app.req_res import *
 from app.utils import dict_get
 from flask_sqlalchemy import orm
@@ -82,8 +81,9 @@ class User(Base):
         若用户没有物品返回ItemNotFound
         :return:
         """
-
+        # todo: 后期看可不可以不借助Item类
         try:
+            from app.models.item import Item                    # 防止相互导入
             items = Item.query.filter_by(user_id=user_id)
             return items
         except Exception as e:
