@@ -2,7 +2,7 @@
 # __author__ = "wyb"
 # date: 2018/11/3
 # 自定义成功响应
-from app.req_res.base import APIException
+from app.req_res.res_base import APIException
 
 
 class Success(APIException):
@@ -13,11 +13,6 @@ class Success(APIException):
 class AuthSuccess(Success):
     # 认证成功
     msg = 'auth success'
-
-
-class EditSuccess(Success):
-    # 编辑成功
-    msg = 'edit success'
 
 
 class PostSuccess(Success):

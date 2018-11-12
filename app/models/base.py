@@ -7,6 +7,10 @@ from app.models import db
 
 # 数据类基类
 class Base(db.Model):
+    """
+        重写db.Model
+            重写一些方法 添加一些新属性新方法
+    """
     __abstract__ = True
 
     # 相关状态
@@ -22,15 +26,33 @@ class Base(db.Model):
 
     @property
     def create_datetime(self):
+        # 获得创建时间
         if self.create_time:
             return datetime.fromtimestamp(self.create_time)
         else:
             return None
 
+    # 设置对象的属性(id不能设置)
     def set_attrs(self, attrs_dict):
         for key, value in attrs_dict.items():
             if hasattr(self, key) and key != 'id':
                 setattr(self, key, value)
+
+    def delete(self):
+        """
+        删除记录 ->目前是真删除 日后可能改成假删除 -> self.status = 0
+        :return:
+        """
+        with db.auto_commit():
+            db.session.delete(self)
+
+    def save(self):
+        """
+        保存修改或提交的记录
+        :return:
+        """
+        with db.auto_commit():
+            db.session.add(self)
 
     @classmethod
     def all(cls):
@@ -39,40 +61,32 @@ class Base(db.Model):
         实际上就是执行这样的代码: items = Item.query.all()
         :return:
         """
-        pass
-
-    def delete(self):
-        """
-        目前是真删除 日后可能改成假删除 -> self.status = 0
-        :return:
-        """
-        try:
-            db.session.delete(self)
-            db.session.commit()
-            return True
-        except Exception as e:
-            print(e)
-        return False
+        return cls.query.all()
 
     def keys(self):
+        # 返回fields属性 -> fields属性定义默认输出字段
         return self.fields
 
     def hide(self, *keys):
+        # 减少fields属性中的值
         for key in keys:
             self.fields.remove(key)
         return self
 
     def append(self, *keys):
+        # 增加fields属性中的值
         for key in keys:
             self.fields.append(key)
         return self
 
     @classmethod
-    def page(cls):
+    def page(cls, page_num):
         """
-        封装分页返回数据
+        封装分页返回数据(要求类中必须有time属性)
         实际上就是执行这样的代码: Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
+        后期实现:  若没有time属性  就用create_time属性(在基类中定义了)
         :return:
         """
-        pass
+        cls.query.order_by(cls.time.desc()).offset(page_num * 8).limit(8).all()
+
 

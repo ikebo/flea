@@ -1,6 +1,9 @@
 from . import db
 from app.models.base import Base
+from app.models.item import Item
+from app.req_res import *
 from app.utils import dict_get
+from flask_sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash                # 加密密码以及检测hash过的密码
 import json
 
@@ -34,9 +37,10 @@ class User(Base):
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
     replies = db.relationship('Reply', backref='user', lazy='dynamic')
 
-    def __init__(self, openId):
+    @orm.reconstructor  # ORM通过元类来创建模型对象 所以要在构造函数前添加这个装饰器 用以实现对象转字典
+    def __init__(self):
         super(User, self).__init__()
-        self.openId = openId
+        self.fields = ["id", "isAuth", "openId", "nickName", "avatarUrl", "phoneNumber", "qqNumber", "weixinNumber"]
 
     @property
     def password(self):
@@ -71,6 +75,31 @@ class User(Base):
         user = User.query.filter_by(id=user_id).first()
         return user
 
+    @staticmethod
+    def query_items_by_id(user_id):
+        """
+        根据用户id获取用户发布的物品信息
+        若用户没有物品返回ItemNotFound
+        :return:
+        """
+
+        try:
+            items = Item.query.filter_by(user_id=user_id)
+            return items
+        except Exception as e:
+            print(e)
+            raise ItemNotFound() if isinstance(e, NotFound) else SomethingError()
+
+    def is_auth(self):
+        """
+        判断是否已经认证
+        :return:
+        """
+        if self.isAuth == 1:
+            return True
+        else:
+            return False
+
     def set_auth(self):
         """
         设置authentication
@@ -78,12 +107,9 @@ class User(Base):
         """
         try:
             self.isAuth = 1
-            db.session.add(self)
-            db.session.commit()
-            return True
+            self.save()
         except Exception as e:
             print(e)
-        return False
 
     def update_avatar(self, kwargs):
         """
@@ -98,14 +124,13 @@ class User(Base):
                 self.avatarUrl = avatarUrl
             if nickName is not None:
                 self.nickName = nickName
-            if not avatarUrl and not nickName:          # avatarUrl nickName 不能都为None
+            if avatarUrl is None and nickName is None:                  # 两者不能都为空
                 return False
-            db.session.add(self)
-            db.session.commit()
+            self.save()
             return True
         except Exception as e:
             print('Exception ', e)
-        return False
+            return False
 
     def update_contact(self, kwargs):
         """
@@ -125,13 +150,11 @@ class User(Base):
                 self.weixinNumber = weixinNumber
             if not phoneNumber and not qqNumber and not weixinNumber:       # 三种联系方式不能都为None
                 return False
-            db.session.add(self)
-            db.session.commit()
+            self.save()
             return True
         except Exception as e:
             print('Exception ', e)
-
-        return False
+            return False
 
     def json(self):
         user_id = self.id
@@ -158,9 +181,9 @@ class User(Base):
     @staticmethod
     def register_by_openid(openid):
         try:
-            user = User(openid)
-            db.session.add(user)
-            db.session.commit()
+            user = User()
+            user.openId = openid
+            user.save()
             return user, None
         except Exception as e:
             return None, e

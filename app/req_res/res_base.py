@@ -1,7 +1,7 @@
 # encoding: utf-8
 # __author__ = "wyb"
 # date: 2018/11/3
-# req_res包的基类
+# 异常响应基类(也可以做普通响应)
 from flask import request, json
 from werkzeug.exceptions import HTTPException
 

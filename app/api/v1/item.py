@@ -8,13 +8,12 @@
         /api/v1/item/<int:item_id>   PUT   					修改某个物品信息
         /api/v1/item/<int: item_id>  DELETE   				删除某个物品信息
 
-        /api/v1/item/search	                GET			    搜索物品
-        /api/v1/item/upload_img             POST   			上传图片  返回图片地址
+        /api/v1/item/search/<search_key>/<int:page_num>	    GET			    搜索物品
+        /api/v1/item/upload_img                             POST   			上传图片  返回图片地址
 """
 from . import Redprint
 from app.req_res import *
-from app.req_res.res import Res
-from app.req_res.transfer import Transfer
+from app.req_res.req_transfer import Transfer
 from app.utils.file import allowed_file, save_upload_img
 from app.models.item import Item
 from app.models.user import User
@@ -29,8 +28,8 @@ def get_items():
     :return:
     """
     try:
-        items = Item.query.all()
-        data = [i.raw() for i in items]
+        items = Item.all()
+        data = [dict(i) for i in items]
         print(data)
         return dict(code=1, msg='get all item data successfully', data=data)
     except Exception as e:
@@ -46,8 +45,8 @@ def get_items2(page_num):
     :return:
     """
     try:
-        items = Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
-        data = [i.raw() for i in items]
+        items = Item.page(page_num)
+        data = [dict(i) for i in items]
         print(data)
         return dict(code=1, msg='get a part of item data successfully', data=data)
     except Exception as e:
@@ -65,9 +64,7 @@ def return_item(item_id):
     """
     try:
         i = Item.query.filter_by(id=item_id).first_or_404()
-        data = i.raw()
-        print(data)
-        return dict(code=1, msg='get a item data successfully', data=data)
+        return dict(code=1, msg='get a item data successfully', data=dict(i))
     except Exception as e:
         print(e)
         return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
@@ -77,8 +74,8 @@ def return_item(item_id):
 @item.route('/<int:user_id>', methods=['POST'])
 def post_item(user_id):
     try:
-        transfer = Transfer()
-        data = transfer.handle_post()
+        req = Transfer()
+        data = req.handle_post()
         print('data: ', data)
         User.query.get(user_id)
         if Item.create_item(data, user_id):
@@ -101,8 +98,10 @@ def edit_item(item_id):
         transfer = Transfer()
         data = transfer.handle_post()
         print('edit_item', data)
-        if i.edit(data):
-            return EditSuccess()
+        if i.edit_item(data):
+            return UpdateSuccess()
+        else:
+            return UpdateFail()
     except Exception as e:
         print(e)
         return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
@@ -118,36 +117,51 @@ def delete_item(item_id):
     """
     try:
         i = Item.query.get(item_id)
-        if i.delete():
-            return DeleteSuccess()
+        i.delete()
     except Exception as e:
         print(e)
         return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
+    else:
+        return DeleteSuccess()
     # return '删除物品信息'
 
 
-@item.route('/search', methods=['GET'])
-def search_item():
+@item.route('/search/<search_key>/<int:page_num>', methods=['GET'])
+def search_item(search_key, page_num):
     """
-    搜索item
+    搜索item get实现
     :return:
     """
     try:
-        transfer = Transfer()
-        page = int(transfer.args_get('page'))
-        search_key = transfer.args_get('key')
         key = '%{}%'.format(search_key)
-        print('key', key)
-        query = Item.query.join(User)
-        items = query.filter(Item.des.like(key)).order_by(Item.time.desc()).offset(page * 8).limit(8).all()
-        data = [i.raw() for i in items]
+        print("key and page_num: ", key, page_num)
+        data = Item.search_item(key, page_num)
         print(data)
-        return Res(1, 'search items successfully', data).jsonify()
+        return dict(code=1, msg='search items successfully', data=data)
     except Exception as e:
         print(e)
-        if isinstance(e, NotFound):
-            return NotFound()
-    return SomethingError()
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
+    # return '搜索物品信息'
+
+
+@item.route('/search/', methods=['POST'])
+def search_item2():
+    """
+    搜索item post实现
+    :return:
+    """
+    try:
+        req = Transfer()
+        data = req.handle_post()
+        key = '%{}%'.format(data["search_key"])
+        page_num = int(data["page_num"])
+        print("key and page_num: ", key, page_num)
+        data = Item.search_item(key, page_num)
+        print(data)
+        return dict(code=1, msg='search items successfully', data=data)
+    except Exception as e:
+        print(e)
+        return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
     # return '搜索物品信息'
 
 
@@ -163,7 +177,7 @@ def upload_img():
         file = transfer.handle_file()
         if file and allowed_file(file.filename):
             data = save_upload_img(file, file.filename)
-            return Res(1, 'upload img successfully', data).jsonify()
+            return dict(code=1, msg='upload img successfully', data=data)
         else:
             return ParameterException()
     except Exception as e:

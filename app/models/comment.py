@@ -2,9 +2,9 @@
   Created by kebo on 2018/10/15
 """
 import datetime
-
 from . import db
 from app.models.base import Base
+from flask_sqlalchemy import orm
 
 
 class Comment(Base):
@@ -18,6 +18,7 @@ class Comment(Base):
 
     replies = db.relationship('Reply', backref='comment', lazy='dynamic')   # 评论下的所有回复
 
+    @orm.reconstructor  # ORM通过元类来创建模型对象 所以要在构造函数前添加这个装饰器 用以实现对象转字典
     def __init__(self, content, item_id, user_id):
         super(Comment, self).__init__()
         self.content = content
