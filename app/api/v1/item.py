@@ -126,17 +126,22 @@ def delete_item(item_id):
     # return '删除物品信息'
 
 
-@item.route('/search/<search_key>/<int:page_num>', methods=['GET'])
-def search_item(search_key, page_num):
+@item.route('/search/', methods=['GET'])
+def search_item():
     """
     搜索item get实现
+    参数:
+        search_key: 指定搜索关键字
+        page_num: 指定返回页数(0开始)
     :return:
     """
-    # todo 待测试
     try:
-        key = '%{}%'.format(search_key)
-        print("key and page_num: ", key, page_num)
-        data = Item.search_item(key, page_num)
+        args = Transfer().handle_get()
+        search_key = args.get("search_key")
+        page_num = int(args.get("page_num"))
+        search_key = '%{}%'.format(search_key)
+        print("key and page_num: ", search_key, page_num)
+        data = Item.search_item(search_key, page_num)
         print(data)
         return dict(code=1, msg='search items successfully', data=data)
     except Exception as e:
@@ -149,12 +154,13 @@ def search_item(search_key, page_num):
 def search_item2():
     """
     搜索item post实现
+    参数:
+        search_key: 指定搜索关键字
+        page_num: 指定返回页数(0开始)
     :return:
     """
-    # todo 待测试
     try:
-        req = Transfer()
-        data = req.handle_post()
+        data = Transfer().handle_post()
         key = '%{}%'.format(data["search_key"])
         page_num = int(data["page_num"])
         print("key and page_num: ", key, page_num)
