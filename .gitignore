@@ -6,4 +6,5 @@
 /docs/
 /static/advice/
 /static/upload/
-*/__pycache__/
+.gitattributes
+**/__pycache__

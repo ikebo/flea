@@ -79,14 +79,4 @@ class Base(db.Model):
             self.fields.append(key)
         return self
 
-    @classmethod
-    def page(cls, page_num):
-        """
-        封装分页返回数据(要求类中必须有time属性)
-        实际上就是执行这样的代码: Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
-        后期实现:  若没有time属性  就用create_time属性(在基类中定义了)
-        :return:
-        """
-        cls.query.order_by(cls.time.desc()).offset(page_num * 8).limit(8).all()
-
 

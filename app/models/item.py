@@ -20,7 +20,7 @@ class Item(Base):
     des = db.Column(db.String(250))                 # 物品描述
     type = db.Column(db.SmallInteger, default=ItemTypeEnum.OTHER_PRODUCTS.value)    # 物品分类(默认为其他)
     time = db.Column(db.DateTime)                   # 发布时间
-    srcs = db.Column(db.String(300))                # 物品图片地址 (最多三张，分割符为'|')
+    srcs = db.Column(db.String(300))                # 物品图片地址 (最多九张，分割符为'|')
     originPrice = db.Column(db.Integer)             # 物品原价
     price = db.Column(db.Integer)                   # 物品价格
 

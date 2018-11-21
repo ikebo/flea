@@ -40,7 +40,7 @@ def get_users():
         return UserNotFound() if isinstance(e, NotFound) else SomethingError()
 
 
-@user.route('/<int:user_id>', methods=['GET'])
+@user.route('/detail/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     """
     根据用户id获取用户信息
@@ -183,17 +183,17 @@ def login(code):
     if nil is not None:
         return (0, 'invalid code'), 400
     else:
-        user, nil = User.is_exists_by_openid(openid)
+        u, nil = User.is_exists_by_openid(openid)
         if nil is not None:
             # 注册此用户 然后 并保存用户信息到g变量中
-            user, nil = User.register_by_openid(openid)
-            g.user = user
+            u, nil = User.register_by_openid(openid)
+            g.user = u
             if nil is not None:
                 return (2, 'fail to register user'), 500
             else:
-                return (1, 'register user successfully', user.json()), 200
+                return (1, 'register user successfully', dict(u)), 200
         else:
-            g.user = user           # 保存用户信息到g变量中
-            return (1, 'old user', user.json()), 200
+            g.user = u           # 保存用户信息到g变量中
+            return (1, 'old user', dict(u)), 200
 
 

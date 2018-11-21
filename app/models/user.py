@@ -156,12 +156,6 @@ class User(Base):
             print('Exception ', e)
             return False
 
-    def json(self):
-        user_id = self.id
-        openId = self.openId
-
-        return json.dumps(dict(id=user_id, openId=openId))
-
     def seri(self):
         return dict(id=self.id, avatarUrl=self.avatarUrl,
                     nickName=self.nickName, phoneNumber=self.phoneNumber)

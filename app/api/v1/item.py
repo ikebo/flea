@@ -8,8 +8,9 @@
         /api/v1/item/<int:item_id>   PUT   					修改某个物品信息
         /api/v1/item/<int: item_id>  DELETE   				删除某个物品信息
 
-        /api/v1/item/search/<search_key>/<int:page_num>	    GET			    搜索物品
-        /api/v1/item/upload_img                             POST   			上传图片  返回图片地址
+        /api/v1/item/search	                    POST			 搜索物品
+        /api/v1/item/search	                    POST			 搜索物品
+        /api/v1/item/upload_img                 POST   			上传图片  返回图片地址
 """
 from . import Redprint
 from app.req_res import *
@@ -45,7 +46,8 @@ def get_items2(page_num):
     :return:
     """
     try:
-        items = Item.page(page_num)
+        items = Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
+        print(items)
         data = [dict(i) for i in items]
         print(data)
         return dict(code=1, msg='get a part of item data successfully', data=data)
@@ -126,7 +128,7 @@ def delete_item(item_id):
     # return '删除物品信息'
 
 
-@item.route('/search/', methods=['GET'])
+@item.route('/search', methods=['GET'])
 def search_item():
     """
     搜索item get实现
@@ -150,7 +152,7 @@ def search_item():
     # return '搜索物品信息'
 
 
-@item.route('/search/', methods=['POST'])
+@item.route('/search', methods=['POST'])
 def search_item2():
     """
     搜索item post实现
@@ -179,11 +181,9 @@ def upload_img():
     上传图片，返回图片地址
     :return: 图片地址
     """
-    # todo 待测试
     try:
         print(request.files)
-        transfer = Transfer()
-        file = transfer.handle_file()
+        file = Transfer().handle_file()
         if file and allowed_file(file.filename):
             data = save_upload_img(file, file.filename)
             return dict(code=1, msg='upload img successfully', data=data)
