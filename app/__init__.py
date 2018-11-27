@@ -47,7 +47,7 @@ with app.app_context():
 
 @app.route('/flea')
 def flea():
-    return '<h1>Hello Flea!</h1>'
+    return 'Hello Flea!'
 
-# app.register_blueprint(admin_blueprint, url_prefix="/flea/admin")
+app.register_blueprint(admin_blueprint, url_prefix="/flea/admin")
 app.register_blueprint(create_blueprint_api_v1(), url_prefix='/flea/api/v1')
