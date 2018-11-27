@@ -143,11 +143,6 @@ class User(db.Model):
             print(e)
         return False
 
-    def json(self):
-        user_id = self.id
-        openId = self.openId
-
-        return json.dumps(dict(id=user_id, openId=openId))
 
     def seri(self):
         return dict(id=self.id, avatarUrl=self.avatarUrl,
@@ -158,12 +153,6 @@ class User(db.Model):
                     nickName=self.nickName, phoneNumber=self.phoneNumber,
                     qqNumber=self.qqNumber, weixinNumber=self.weixinNumber)
 
-    def get_contact(self):
-        phoneNumber = self.phoneNumber
-        qqNumber = self.qqNumber
-        weixinNumber = self.weixinNumber
-
-        return json.dumps(dict(phoneNumber=phoneNumber, qqNumber=qqNumber, weixinNumber=weixinNumber))
 
     @staticmethod
     def register_by_openid(openid):

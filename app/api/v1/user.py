@@ -146,11 +146,6 @@ def delete_user(user_id):
         return SomethingError()
 
 
-# 测试用
-@user.route('')
-def get_user():
-    return (1, 'success', dict(a='code')), 203
-
 
 # 用户登录, 前端根据获取的code调用此接口
 # 首先判断code是否有效，无效则返回非法code, 有效则可以获取用户的openid
@@ -162,15 +157,17 @@ def login(code):
     if nil is not None:
         return (0, 'invalid code'), 400
     else:
+        print('openid', openid)
         user, nil = User.is_exists_by_openid(openid)
+        print('....')
         if nil is not None:
             # 注册此用户
             user, nil = User.register_by_openid(openid)
             if nil is not None:
                 return (2, 'fail to register user'), 500
             else:
-                return (1, 'register user successfully', user.json()), 200
+                return (1, 'register user successfully', user.seri()), 200
         else:
-            return (1, 'old user', user.json()), 200
+            return (1, 'old user', user.seri()), 200
 
 
