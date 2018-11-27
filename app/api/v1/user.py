@@ -16,9 +16,9 @@
 """
 from . import Redprint
 from app.models.user import User
-from app.req_res import *
-from app.req_res.req_transfer import Transfer
-from app.utils.http import request_auth
+# from app.req_res import *
+# from app.req_res.req_transfer import Transfer
+# from app.utils.http import request_auth
 from app.utils.util import is_code_valid
 from flask import g
 
