@@ -1,0 +1,11 @@
+*.xml
+/venv/
+/.idea/
+/test/
+/docs/
+/static/advice/
+/static/upload/
+*/__pycache__/
+*.pyc
+.gitattributes
+**/__pycache__
