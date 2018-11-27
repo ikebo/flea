@@ -7,3 +7,4 @@
 /static/advice/
 /static/upload/
 */__pycache__/
+*.pyc
