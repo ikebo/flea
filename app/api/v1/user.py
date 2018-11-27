@@ -177,7 +177,7 @@ user = Redprint("user")
 # 用户登录, 前端根据获取的code调用此接口
 # 首先判断code是否有效，无效则返回非法code, 有效则可以获取用户的openid
 # 然后根据openid查询用户，如无此用户则创建，最终返回用户信息
-@user.route('/<code>', methods=['GET'])
+@user.route('/login/<code>', methods=['GET'])
 def login(code):
     # 根据code获取openid, 若code无效，则nil不为空
     openid, nil = is_code_valid(code)
