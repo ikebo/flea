@@ -18,6 +18,10 @@ class Transfer(object):
         self.postData = request.data            # 取得post提交的数据
         self.fileData = request.files
 
+    def args_get(self, k):
+        # 获取args中某个参数的值
+        return self.getArgs.get(k)
+
     def handle_get(self):
         # 将get提交的参数转换成字典返回
         return self.getArgs.to_dict()

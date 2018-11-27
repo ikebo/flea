@@ -12,8 +12,7 @@ advice的API:
 """
 from . import Redprint
 from app.req_res import *
-from app.req_res.res import Res
-from app.req_res.transfer import Transfer
+from app.req_res.req_transfer import Transfer
 from app.utils.advice import Advice
 
 api = Redprint("advice")
@@ -31,7 +30,7 @@ def post_advice():
         data = transfer.handle_post()
         user_id, advice_content = data['user_id'], data['advice']
         advice.save_advice(user_id, advice_content)
-        return Res(1, 'post advice successfully').jsonify()
+        return dict(code=1, msg='post advice successfully')
     except Exception as e:
         print(e)
     return SomethingError()
@@ -46,7 +45,7 @@ def get_advice():
     try:
         advice = Advice()
         data = advice.get_yesterday_advice()
-        return Res(1, 'get yesterday advices successfully', data).jsonify()
+        return dict(code=1, msg='get yesterday advices successfully', data=data)
     except Exception as e:
         print(e)
     return SomethingError()
@@ -61,7 +60,7 @@ def get_advices():
     try:
         advice = Advice()
         data = advice.get_all_advice()
-        return Res(1, 'get all advices successfully', data).jsonify()
+        return dict(code=1, msg='get all advices successfully', data=data)
     except Exception as e:
         print(e)
     return SomethingError()

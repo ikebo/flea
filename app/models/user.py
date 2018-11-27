@@ -1,15 +1,15 @@
 from . import db
+from app.models.base import Base
+from app.req_res import *
 from app.utils import dict_get
+from flask_sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash                # 加密密码以及检测hash过的密码
 import json
 
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-
-    # 相关状态
-    status = db.Column(db.SmallInteger, default=1)              # 数据状态(日后实现假删除) 1表示存在 0表示删除
     isAuth = db.Column(db.SmallInteger, default=0)              # 是否完成认证 0表示未认证 1表示已认证
 
     # 微信信息
@@ -36,8 +36,10 @@ class User(db.Model):
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
     replies = db.relationship('Reply', backref='user', lazy='dynamic')
 
-    def __init__(self, openId):
-        self.openId = openId
+    @orm.reconstructor  # ORM通过元类来创建模型对象 所以要在构造函数前添加这个装饰器 用以实现对象转字典
+    def __init__(self):
+        super(User, self).__init__()
+        self.fields = ["id", "isAuth", "openId", "nickName", "avatarUrl", "phoneNumber", "qqNumber", "weixinNumber"]
 
     @property
     def password(self):
@@ -72,6 +74,32 @@ class User(db.Model):
         user = User.query.filter_by(id=user_id).first()
         return user
 
+    @staticmethod
+    def query_items_by_id(user_id):
+        """
+        根据用户id获取用户发布的物品信息
+        若用户没有物品返回ItemNotFound
+        :return:
+        """
+        # todo: 后期看可不可以不借助Item类
+        try:
+            from app.models.item import Item                    # 防止相互导入
+            items = Item.query.filter_by(user_id=user_id)
+            return items
+        except Exception as e:
+            print(e)
+            raise ItemNotFound() if isinstance(e, NotFound) else SomethingError()
+
+    def is_auth(self):
+        """
+        判断是否已经认证
+        :return:
+        """
+        if self.isAuth == 1:
+            return True
+        else:
+            return False
+
     def set_auth(self):
         """
         设置authentication
@@ -79,12 +107,9 @@ class User(db.Model):
         """
         try:
             self.isAuth = 1
-            db.session.add(self)
-            db.session.commit()
-            return True
+            self.save()
         except Exception as e:
             print(e)
-        return False
 
     def update_avatar(self, kwargs):
         """
@@ -99,12 +124,13 @@ class User(db.Model):
                 self.avatarUrl = avatarUrl
             if nickName is not None:
                 self.nickName = nickName
-            db.session.add(self)
-            db.session.commit()
+            if avatarUrl is None and nickName is None:                  # 两者不能都为空
+                return False
+            self.save()
             return True
         except Exception as e:
             print('Exception ', e)
-        return False
+            return False
 
     def update_contact(self, kwargs):
         """
@@ -122,12 +148,12 @@ class User(db.Model):
                 self.qqNumber = qqNumber
             if weixinNumber is not None:
                 self.weixinNumber = weixinNumber
-            db.session.add(self)
-            db.session.commit()
+            if not phoneNumber and not qqNumber and not weixinNumber:       # 三种联系方式不能都为None
+                return False
+            self.save()
             return True
         except Exception as e:
             print('Exception ', e)
-
         return False
 
     def delete(self):
@@ -157,9 +183,9 @@ class User(db.Model):
     @staticmethod
     def register_by_openid(openid):
         try:
-            user = User(openid)
-            db.session.add(user)
-            db.session.commit()
+            user = User()
+            user.openId = openid
+            user.save()
             return user, None
         except Exception as e:
             return None, e

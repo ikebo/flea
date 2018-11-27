@@ -2,33 +2,31 @@
 # __author__ = "wyb"
 # date: 2018/11/3
 # 自定义成功响应
-from app.req_res.base import APIException
+from app.req_res.res_base import APIException
 
 
 class Success(APIException):
-    code = 201
+    code = 1
     msg = 'Ok - success'
-    error_code = 0
 
 
 class AuthSuccess(Success):
+    # 认证成功
     msg = 'auth success'
 
 
-class EditSuccess(Success):
-    msg = 'edit success'
-
-
 class PostSuccess(Success):
+    # 提交成功
     msg = 'post success'
 
 
 class UpdateSuccess(Success):
+    # 更新成功
     msg = 'update success'
 
 
 class DeleteSuccess(Success):
-    code = 202                      # 204表示No Content 在返回中没有任何内容
+    # 删除成功
     msg = 'delete success'
 
 

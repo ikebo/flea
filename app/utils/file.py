@@ -11,31 +11,31 @@ from werkzeug.exceptions import RequestEntityTooLarge
 from app.req_res import ImgLargeException, SomethingError
 
 
-def allowed_file(filename):
-    """
-    坚持文件是否合法
-    :param filename:
-    :return:
-    """
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
-
-
-def get_current_date():
+def _get_current_date():
     now = datetime.datetime.now()
     return now.strftime("%Y-%m-%d")
 
 
-def get_fileRoute(filename):
+def _get_fileRoute(filename):
     """
     获取上传文件保存路径
     :param filename: 文件名
     :return:
     """
     file = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1].lower()
-    folder = os.path.join(current_app.config['UPLOAD_FOLDER'], get_current_date())
+    folder = os.path.join(current_app.config['UPLOAD_FOLDER'], _get_current_date())
     if not os.path.exists(folder):
         os.mkdir(folder)
     return os.path.join(folder, file)
+
+
+def allowed_file(filename):
+    """
+    检查文件是否合法
+    :param filename:
+    :return:
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
 def save_upload_img(file, filename):
@@ -47,18 +47,16 @@ def save_upload_img(file, filename):
     """
     try:
         filename = secure_filename(filename)        # 对文件名进行检查
-        path = get_fileRoute(filename)
+        path = _get_fileRoute(filename)
         print("the file save path: ", path)
         file.save(path)
         sep = os.path.sep
-        ra = path.rsplit(sep, 3)
-        r = url_for('static', filename=(ra[-3] + '/' + ra[-2] + '/' + ra[-1]))
+        ra = path.rsplit(sep, 3)            # uploads %Y-%m-%d xxx.xxx
+        r = url_for('static', filename=(ra[-3] + '/' + ra[-2] + '/' + ra[-1]))      # 图片存储的链接地址
         print(r)
         data = dict(imgServerPath=r)
         return data
     except Exception as e:
         print(e)
-    except RequestEntityTooLarge:
-        raise ImgLargeException
-    raise SomethingError
+        raise ImgLargeException() if isinstance(e, RequestEntityTooLarge) else SomethingError()
 
