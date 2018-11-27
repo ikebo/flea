@@ -1,7 +1,6 @@
 *.xml
 /venv/
 /.idea/
-/app/settings.py
 /test/
 /docs/
 /static/advice/
