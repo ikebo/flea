@@ -65,18 +65,18 @@ class Query(BaseQuery):
             raise NotFound()
         return rv
 
-    def filter_by(self, **kwargs):
-        """
-        目前是调用父类的filter_by执行 日后改成在未删除的元素中寻找
-        :param kwargs:
-        :return:
-        """
-        # if 'status' not in kwargs.keys():
-        #     kwargs['status'] = 1  # 确保status为0的不被找出来
-        res = super(Query, self).filter_by(**kwargs)
-        if res.first() is None:
-            raise NotFound()
-        return res
+    # def filter_by(self, **kwargs):
+    #     """
+    #     目前是调用父类的filter_by执行 日后改成在未删除的元素中寻找
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     # if 'status' not in kwargs.keys():
+    #     #     kwargs['status'] = 1  # 确保status为0的不被找出来
+    #     res = super(Query, self).filter_by(**kwargs)
+    #     if res.first() is None:
+    #         raise NotFound()
+    #     return res
 
 
 # 实例化db
