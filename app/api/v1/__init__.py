@@ -16,9 +16,9 @@ from .test import test
 def create_blueprint_api_v1():
     api = Blueprint("api", __name__)
     user.register(api)
-    item.register(api)
-    comment.register(api)
-    reply.register(api)
-    advice.register(api)
-    test.register(api)
+    # item.register(api)
+    # comment.register(api)
+    # reply.register(api)
+    # advice.register(api)
+    # test.register(api)
     return api
