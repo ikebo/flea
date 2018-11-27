@@ -45,5 +45,5 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-app.register_blueprint(admin_blueprint, url_prefix="/admin")
-app.register_blueprint(create_blueprint_api_v1(), url_prefix='/api/v1')
+app.register_blueprint(admin_blueprint, url_prefix="/flea/admin")
+app.register_blueprint(create_blueprint_api_v1(), url_prefix='/flea/api/v1')
