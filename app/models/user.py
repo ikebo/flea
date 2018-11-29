@@ -39,7 +39,8 @@ class User(Base):
     @orm.reconstructor  # ORM通过元类来创建模型对象 所以要在构造函数前添加这个装饰器 用以实现对象转字典
     def __init__(self):
         super(User, self).__init__()
-        self.fields = ["id", "isAuth", "openId", "nickName", "avatarUrl", "phoneNumber", "qqNumber", "weixinNumber"]
+        self.fields = ["id", "isAuth", "openId", "nickName", "avatarUrl",
+                       "phoneNumber", "qqNumber", "weixinNumber", "realName"]
 
     @property
     def password(self):
@@ -134,11 +135,12 @@ class User(Base):
 
     def update_contact(self, kwargs):
         """
-        更新联系方式(电话号码、QQ号、微信号)
+        更新联系方式(姓名、电话号码、QQ号、微信号)
         :param kwargs:
         :return:
         """
         try:
+            realName = dict_get(kwargs, 'realName')
             phoneNumber = dict_get(kwargs, 'phoneNumber')
             qqNumber = dict_get(kwargs, 'qqNumber')
             weixinNumber = dict_get(kwargs, 'weixinNumber')
@@ -150,6 +152,7 @@ class User(Base):
                 self.weixinNumber = weixinNumber
             if not phoneNumber and not qqNumber and not weixinNumber:       # 三种联系方式不能都为None
                 return False
+            self.realName = self.nickName if realName is None else realName
             self.save()
             return True
         except Exception as e:

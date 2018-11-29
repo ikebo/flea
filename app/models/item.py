@@ -68,11 +68,11 @@ class Item(Base):
         return False
 
     @staticmethod
-    def create_item(kwargs, user_id):
+    def create_item(kwargs, user):
         """
         创建物品
         :param kwargs:   物品类别  物品姓名 物品描述 物品图片地址 物品原价 物品价格
-        :param user_id:  用户id
+        :param user:  用户对象
         :return:
         """
         try:
@@ -85,7 +85,8 @@ class Item(Base):
             item.srcs = dict_get(kwargs, 'srcs', '')
             item.originPrice = dict_get(kwargs, 'originPrice', -1)
             item.price = dict_get(kwargs, 'price', -1)
-            item.user_id = user_id
+            item.user_id = user.id
+            user.update_contact(kwargs)
             item.save()
             return True
         except Exception as e:

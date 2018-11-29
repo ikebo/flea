@@ -75,12 +75,17 @@ def return_item(item_id):
 
 @item.route('/<int:user_id>', methods=['POST'])
 def post_item(user_id):
+    """
+    提交物品信息
+    :param user_id:
+    :return:
+    """
     try:
         req = Transfer()
         data = req.handle_post()
         print('data: ', data)
-        User.query.get(user_id)
-        if Item.create_item(data, user_id):
+        u = User.query.get(user_id)
+        if Item.create_item(data, u):
             return PostSuccess()
     except Exception as e:
         print(e)
