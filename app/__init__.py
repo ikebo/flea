@@ -53,7 +53,7 @@ def flea():
     return 'Hello Flea!'
 
 
-@app.route('/service/static/uploads/<path>/<uri>')
+@app.route('/flea/static/uploads/<path>/<uri>')
 def get_image(path, uri):
     sep = os.path.sep
     uri = path + sep + uri
