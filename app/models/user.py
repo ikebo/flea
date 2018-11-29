@@ -157,7 +157,21 @@ class User(Base):
             return True
         except Exception as e:
             print('Exception ', e)
-            return False
+        return False
+
+    def delete(self):
+        """
+        删除对象 - 直接删除
+        :return:
+        """
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+        return False
+
 
     def seri(self):
         return dict(id=self.id, avatarUrl=self.avatarUrl,
@@ -168,12 +182,6 @@ class User(Base):
                     nickName=self.nickName, phoneNumber=self.phoneNumber,
                     qqNumber=self.qqNumber, weixinNumber=self.weixinNumber)
 
-    def get_contact(self):
-        phoneNumber = self.phoneNumber
-        qqNumber = self.qqNumber
-        weixinNumber = self.weixinNumber
-
-        return json.dumps(dict(phoneNumber=phoneNumber, qqNumber=qqNumber, weixinNumber=weixinNumber))
 
     @staticmethod
     def register_by_openid(openid):

@@ -173,6 +173,7 @@ def delete_user(user_id):
         return DeleteSuccess()
 
 
+
 # 用户登录, 前端根据获取的code调用此接口
 # 首先判断code是否有效，无效则返回非法code, 有效则可以获取用户的openid
 # 然后根据openid查询用户，如无此用户则创建，最终返回用户信息
@@ -183,17 +184,17 @@ def login(code):
     if nil is not None:
         return (0, 'invalid code'), 400
     else:
-        u, nil = User.is_exists_by_openid(openid)
+        user, nil = User.is_exists_by_openid(openid)
         if nil is not None:
             # 注册此用户 然后 并保存用户信息到g变量中
-            u, nil = User.register_by_openid(openid)
-            g.user = u
+            user, nil = User.register_by_openid(openid)
+            g.user = user
             if nil is not None:
                 return (2, 'fail to register user'), 500
             else:
-                return (1, 'register user successfully', dict(u)), 200
+                return (1, 'register user successfully', user.seri()), 200
         else:
-            g.user = u           # 保存用户信息到g变量中
-            return (1, 'old user', dict(u)), 200
+            g.user = user  # 保存用户信息到g变量中
+            return (1, 'old user', user.seri()), 200
 
 
