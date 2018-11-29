@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from werkzeug.wrappers import Response
 
@@ -45,9 +47,34 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+
 @app.route('/flea')
 def flea():
     return 'Hello Flea!'
+
+
+@app.route('/service/static/uploads/<path>/<uri>')
+def get_image(path, uri):
+    sep = os.path.sep
+    uri = path + sep + uri
+    print('uri ', uri)
+    imgPath = os.path.abspath('.') + sep + 'app' + sep + 'static' + sep + 'uploads' + sep
+    imgPath = imgPath + uri
+    print('imgPath ', imgPath)
+    mdict = {
+        'jpeg': 'image/jpeg',
+        'jpg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif'
+    }
+    mime = mdict[((uri.split(sep)[1]).split('.')[1])]
+    print('mime ', mime)
+    if not os.path.exists(imgPath):
+        return (0, 'image does not exists'), 404
+    with open(imgPath, 'rb') as f:
+        image = f.read()
+    return Response(image, mimetype=mime)
+
 
 app.register_blueprint(admin_blueprint, url_prefix="/flea/admin")
 app.register_blueprint(create_blueprint_api_v1(), url_prefix='/flea/api/v1')
