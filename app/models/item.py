@@ -13,7 +13,6 @@ from sqlalchemy import orm
 class Item(Base):
     __tablename__ = 'item'
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    isSale = db.Column(db.SmallInteger, default=1)  # 物品销售状态(1表示在售 0表示下架 or 已卖出)
 
     # 物品必需信息
     itemName = db.Column(db.String(30))             # 物品标题/名称
@@ -37,7 +36,7 @@ class Item(Base):
     def __init__(self):
         super(Item, self).__init__()
         # self.fields定义默认输出字段
-        self.fields = ["id", "isSale", "type", "itemName", "time", "srcs", "des", "price", "user_id"]
+        self.fields = ["id", "type", "itemName", "time", "srcs", "des", "price", "user_id"]
 
     def edit_item(self, kwargs):
         """
