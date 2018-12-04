@@ -106,6 +106,52 @@ class Item(Base):
         data = [dict(i) for i in items]
         return data
 
+    @staticmethod
+    def get_userInfo(uid):
+        from app.models.user import User  # 防止互相导入
+        data = dict(User.query_user_by_id(uid))
+        user_info = {
+            "realName": data["realName"],
+            "phoneNumber": data["phoneNumber"]
+        }
+        return user_info
+
+    @staticmethod
+    def get_item(item_id):
+        """
+        获取某个物品信息(加上发布者的realName和phoneNumber)
+        :return:
+        """
+        i = Item.query.filter_by(id=item_id).first_or_404()
+        user_info = Item.get_userInfo(i.user_id)
+        return dict(i, **user_info)
+
+    @staticmethod
+    def get_items():
+        """
+        获取所有物品信息(加上发布者的realName和phoneNumber)
+        :return:
+        """
+        items = Item.all()
+        data = []
+        for item in items:
+            user_info = Item.get_userInfo(item.user_id)
+            data.append(dict(item, **user_info))
+        return data
+
+    @staticmethod
+    def get_items_page(page_num):
+        """
+        获取部分物品信息(加上发布者的realName和phoneNumber)
+        :return:
+        """
+        items = Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
+        data = []
+        for item in items:
+            user_info = Item.get_userInfo(item.user_id)
+            data.append(dict(item, **user_info))
+        return data
+
     def raw(self):
         if not self.time:
             self.time = datetime.datetime.now()

@@ -29,8 +29,7 @@ def get_items():
     :return:
     """
     try:
-        items = Item.all()
-        data = [dict(i) for i in items]
+        data = Item.get_items()
         print(data)
         return dict(code=1, msg='get all item data successfully', data=data)
     except Exception as e:
@@ -46,9 +45,7 @@ def get_items2(page_num):
     :return:
     """
     try:
-        items = Item.query.order_by(Item.time.desc()).offset(page_num * 8).limit(8).all()
-        print(items)
-        data = [dict(i) for i in items]
+        data = Item.get_items_page(page_num)
         print(data)
         return dict(code=1, msg='get a part of item data successfully', data=data)
     except Exception as e:
@@ -65,15 +62,8 @@ def return_item(item_id):
     :return:
     """
     try:
-        i = Item.query.filter_by(id=item_id).first_or_404()
-        # 添加物品对应的用户信息
-        uid = i.user_id
-        data = dict(User.query_user_by_id(uid))
-        user_info = {
-            "realName": data["realName"],
-            "phoneNumber": data["phoneNumber"]
-        }
-        return dict(code=1, msg='get a item data successfully', data=dict(i, **user_info))
+        data = Item.get_item(item_id)
+        return dict(code=1, msg='get a item data successfully', data=data)
     except Exception as e:
         print(e)
         return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
