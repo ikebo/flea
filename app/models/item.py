@@ -112,7 +112,8 @@ class Item(Base):
         data = dict(User.query_user_by_id(uid))
         user_info = {
             "realName": data["realName"],
-            "phoneNumber": data["phoneNumber"]
+            "phoneNumber": data["phoneNumber"],
+            "avatarUrl": data["avatarUrl"]
         }
         return user_info
 
