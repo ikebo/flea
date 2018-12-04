@@ -65,7 +65,14 @@ def publish_item(user_id):
     try:
         u = User.query_user_by_id(user_id)
         items = User.query_items_by_id(u.id)
-        data = [dict(i) for i in items]
+        data = []
+        for item in items:
+            info = dict(User.query_user_by_id(user_id))
+            user_info = {
+                "realName": info["realName"],
+                "phoneNumber": info["phoneNumber"]
+            }
+            data.append(dict(item, **user_info))
         return dict(code=1, msg='get user successfully', data=data)
     except Exception as e:
         print(e)
