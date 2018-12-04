@@ -94,6 +94,7 @@ def update_avatar(user_id):
         transfer = Transfer()
         u = User.query_user_by_id(user_id)
         data = transfer.handle_post()
+        print('update avatar', data)
         if u.update_avatar(data):
             return UpdateSuccess()
         else:

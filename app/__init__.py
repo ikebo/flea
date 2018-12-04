@@ -76,5 +76,9 @@ def get_image(path, uri):
     return Response(image, mimetype=mime)
 
 
+# @app.route('/flea/static/<uri>')
+# def get_image(uri):
+#     return 'static'
+
 app.register_blueprint(admin_blueprint, url_prefix="/flea/admin")
 app.register_blueprint(create_blueprint_api_v1(), url_prefix='/flea/api/v1')
