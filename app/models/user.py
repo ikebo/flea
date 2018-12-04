@@ -15,7 +15,7 @@ class User(Base):
     # 微信信息
     openId = db.Column(db.String(100))                          # 微信openid
     nickName = db.Column(db.String(30))                         # 微信用户名
-    avatarUrl = db.Column(db.String(100))                       # 微信头像地址
+    avatarUrl = db.Column(db.String(200))                       # 微信头像地址
 
     # 联系方式
     phoneNumber = db.Column(db.String(11))                      # 手机号
