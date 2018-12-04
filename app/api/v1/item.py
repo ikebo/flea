@@ -66,7 +66,14 @@ def return_item(item_id):
     """
     try:
         i = Item.query.filter_by(id=item_id).first_or_404()
-        return dict(code=1, msg='get a item data successfully', data=dict(i))
+        # 添加物品对应的用户信息
+        uid = i.user_id
+        data = dict(User.query_user_by_id(uid))
+        user_info = {
+            "realName": data["realName"],
+            "phoneNumber": data["phoneNumber"]
+        }
+        return dict(code=1, msg='get a item data successfully', data=dict(i, **user_info))
     except Exception as e:
         print(e)
         return ItemNotFound() if isinstance(e, NotFound) else SomethingError()
