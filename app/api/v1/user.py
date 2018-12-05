@@ -69,6 +69,7 @@ def publish_item(user_id):
         for item in items:
             info = dict(User.query_user_by_id(user_id))
             user_info = {
+                "nickName": info["nickName"],
                 "realName": info["realName"],
                 "phoneNumber": info["phoneNumber"]
             }

@@ -172,7 +172,6 @@ class User(Base):
             print(e)
         return False
 
-
     def seri(self):
         return dict(id=self.id, avatarUrl=self.avatarUrl,
                     nickName=self.nickName, phoneNumber=self.phoneNumber)
@@ -181,7 +180,6 @@ class User(Base):
         return dict(id=self.id, avatarUrl=self.avatarUrl,
                     nickName=self.nickName, phoneNumber=self.phoneNumber,
                     qqNumber=self.qqNumber, weixinNumber=self.weixinNumber)
-
 
     @staticmethod
     def register_by_openid(openid):
