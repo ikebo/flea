@@ -111,6 +111,7 @@ class Item(Base):
         from app.models.user import User  # 防止互相导入
         data = dict(User.query_user_by_id(uid))
         user_info = {
+            "nickName": data["nickName"],
             "realName": data["realName"],
             "phoneNumber": data["phoneNumber"],
             "avatarUrl": data["avatarUrl"]
